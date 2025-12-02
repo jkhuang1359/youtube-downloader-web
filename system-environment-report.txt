@@ -1,0 +1,39 @@
+🖥️  系統環境資訊收集
+========================
+📋 WSL 資訊:
+WSL 版本指令不可用
+
+📋 Linux 資訊:
+發行版: Ubuntu 22.04.5 LTS
+核心版本: 6.6.87.2-microsoft-standard-WSL2
+架構: x86_64
+
+📋 Python 資訊:
+Python 3.10.12
+pip 25.3 from /home/jiakuan/.local/lib/python3.10/site-packages/pip (python 3.10)
+
+📋 Node.js 資訊:
+v18.20.8
+10.8.2
+
+📋 Docker 資訊:
+Docker version 29.0.1, build eedd969
+Docker Compose version v2.40.3-desktop.1
+
+📋 記憶體與磁碟使用:
+記憶體: 7.7Gi / 1.1Gi 使用中
+根目錄磁碟: 251G / 2.9G 使用中 (2%)
+
+📋 已安裝的重要套件:
+Python 全域套件:
+未找到相關套件
+
+Node.js 全域套件:
+/home/jiakuan/.nvm/versions/node/v18.20.8/lib
+├── @vue/cli-service-global@4.5.19
+├── @vue/cli@5.0.9
+└── npm@10.8.2
+
+📋 網路資訊:
+IP 地址: 192.168.71.23
+主機名: LAPTOP-313KSBNJ
