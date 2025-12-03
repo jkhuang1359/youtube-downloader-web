@@ -1,58 +1,51 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes
+
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: development
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./downloads:/app/downloads
+      - ./backend/downloads:/app/downloads
+      - ./backend/temp:/app/temp
     environment:
-      - DATABASE_URL=sqlite:///./youtube_downloader.db
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./backend:/app
+      - ./backend/downloads:/app/downloads
+      - ./backend/temp:/app/temp
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    command: celery -A app.celery worker --loglevel=info --pool=solo
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: development
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=development
-      - VUE_APP_API_URL=http://localhost:8000/api/v1
-    depends_on:
-      - backend
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-  celery_worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    command: celery -A app.core.tasks.celery_app worker --loglevel=info
-    volumes:
-      - ./backend:/app
-      - ./downloads:/app/downloads
-    environment:
-      - DATABASE_URL=sqlite:///./youtube_downloader.db
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
-      - backend
-
-volumes:
-  redis_data:
+      - VUE_APP_API_URL=http://localhost:8000

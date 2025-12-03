@@ -1,55 +1,84 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: youtube_downloader
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
     restart: unless-stopped
 
   backend:
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+    build: ./backend
     ports:
       - "8000:8000"
-    depends_on:
-      - redis
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=sqlite:///./db.sqlite3
     volumes:
       - ./backend:/app
-      - downloads:/app/downloads
+      - ./downloads:/app/downloads
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/youtube_downloader
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
     restart: unless-stopped
 
   celery:
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+    build: ./backend
+    command: celery -A celery_app worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/youtube_downloader
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     depends_on:
+      - db
       - redis
       - backend
+    restart: unless-stopped
+
+  flower:
+    build: ./backend
+    command: >
+      sh -c "until celery -A celery_app inspect ping > /dev/null 2>&1; do
+               echo '等待 Celery worker 就緒...';
+               sleep 5;
+             done &&
+             echo 'Celery worker 已就緒，啟動 Flower...' &&
+             celery --broker=redis://redis:6379/0 -A celery_app flower --port=5555"
+    ports:
+      - "5555:5555"
     environment:
-      - REDIS_URL=redis://redis:6379/0
-    command: celery -A app.celery worker --loglevel=info
-    volumes:
-      - ./backend:/app
-      - downloads:/app/downloads
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/youtube_downloader
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - backend
+      - celery
     restart: unless-stopped
 
   frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
+    build: ./frontend
     ports:
-      - "8080:80"
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://backend:8000
     depends_on:
       - backend
     restart: unless-stopped
 
 volumes:
-  redis_data:
-  downloads:
+  postgres_data:

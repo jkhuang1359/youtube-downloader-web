@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Downloader Test</title>
+</head>
+<body>
+    <h1>YouTube Downloader Frontend Test</h1>
+    <p>如果看到此頁面，表示前端服務正常。</p>
+    <p>API 狀態: <span id="api-status">檢查中...</span></p>
+    <script>
+        fetch('http://localhost:8000/health')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-status').textContent = 
+                    data.status === 'healthy' ? '✅ API 正常' : '❌ API 異常';
+            })
+            .catch(error => {
+                document.getElementById('api-status').textContent = '❌ 無法連接 API';
+            });
+    </script>
+</body>
+</html>

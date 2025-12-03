@@ -1,23 +1,49 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Docker
+docker-compose.override.yml
+*.backup
+*.backup.*
+
 # Python
-backend/venv/
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Node
-frontend/node_modules/
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/.npm
-frontend/.yarn-integrity
+# Node/前端
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+*.log
+logs/
+tests/logs/
+
+# Database
+*.db
+*.sqlite3
 
 # IDE
 .vscode/
@@ -25,25 +51,90 @@ frontend/.yarn-integrity
 *.swp
 *.swo
 
-# Logs
-logs/
-*.log
+# OS
+.DS_Store
+Thumbs.db
+
+# 臨時文件和備份
+*_fixed.py
+*_fixed.sh
+*final*.sh
+*ultimate*.sh
+*diagnose*.sh
+*fix_*.sh
+*verify_*.sh
+*test_*.sh
+*status.sh
+*manage.sh
+*stop.sh
+*start_fixed.sh
+*start.fixed.sh
+health_check_docker.py
+health_check.py.backup*
+health_check.py.before_fix
+health_check.py.final_backup
+health_check.py.fixed
+health_check.py.ultimate_backup
+docker-compose.yml.backup*
+markfile
+README_FIXES.md
+TEST_PLAN.md
+backend_backup/
+
+# 特定文件
+"\345\260\210\346\241\210\347\213\200\346\205\213\345\240\261\345\221\212.txt"
+
+# Virtual Environments
+venv/
+env/
+backend/venv/
+
+
+# Virtual Environments
+venv/
+env/
+backend/venv/
+
+# Node/前端
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Docker
-*.dockerignore
-docker-compose.override.yml
-
-# 專案特定
-backend/downloads/
-backend/temp/
-backend/db.sqlite3
-backend/.env
+# =========== Frontend 相關 ===========
+frontend/node_modules/
 frontend/dist/
 frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
-# 系統特定
-.vscode-server/
+# =========== Virtual Environments ===========
+venv/
+env/
+backend/venv/
+
+# =========== IDE ===========
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========== OS ===========
+.DS_Store
+Thumbs.db
+
+# =========== 備份文件 ===========
+*.backup
+package.json.backup
+src/main.js.backup
